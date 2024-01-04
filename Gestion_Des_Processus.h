@@ -17,16 +17,22 @@ typedef struct elementProcessus
 }elementProcessus;
 
 TarbreProcessus root;
+TarbreProcessus noued; 
 TListeProcessus Elu;
 TListeProcessus Pret;
 TListeProcessus Bloquer;
 TListeProcessus premier;
 TListeProcessus dernier;
 int ram;
-int PID = 1;
- 
-void CreerRoot();
+int compteur;
+
+void creeroot();
 void LancerRoot();
-TListeProcessus InsererFin(TListeProcessus l, int PID); 
-void creeNoued();
-void Preordre(TarbreProcessus root);
+TListeProcessus InsererFin(TListeProcessus *l, int P); 
+void Creer();
+void Htop(TarbreProcessus root);
+void afficherListe(TListeProcessus l); 
+void InsererNoeud(TarbreProcessus l, int p); 
+TListeProcessus SuppDebut(TListeProcessus *l); 
+TarbreProcessus recherche(TarbreProcessus r, int p); 
+TarbreProcessus recherchpere(TarbreProcessus l);
