@@ -21,8 +21,6 @@ TarbreProcessus noued;
 TListeProcessus Elu;
 TListeProcessus Pret;
 TListeProcessus Bloquer;
-TListeProcessus premier;
-TListeProcessus dernier;
 int ram;
 int compteur;
 
@@ -36,3 +34,4 @@ void InsererNoeud(TarbreProcessus l, int p);
 TListeProcessus SuppDebut(TListeProcessus *l); 
 TarbreProcessus recherche(TarbreProcessus r, int p); 
 TarbreProcessus recherchpere(TarbreProcessus l);
+TListeProcessus rechercheliste(TListeProcessus l);

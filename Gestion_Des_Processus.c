@@ -13,12 +13,12 @@ void creeroot()
     root->Etat = 0;
     printf("Initialiser la taille de ram de cette processus : ");
     scanf("%d", &root->RAM);
-    ram = ram - root->RAM;
-    if (ram < 0)
+    while (ram - root->RAM < 0)
     {
-        printf("n'est pas espace memoire\n");
-        exit(EXIT_FAILURE);
+        printf("Espace dans la Ram insufisant refaire la saisie : ");
+        scanf("%d", &root->RAM);
     }
+    ram = ram - root->RAM;
     root->Fils = NULL;
     root->Frere = NULL;
     noued = root;
@@ -35,38 +35,44 @@ void LancerRoot()
 
 void Creer()
 {
-    int p;
-    TarbreProcessus nouveauNoeud = malloc(sizeof(elementArbre));
-    /*if (noued->Etat != 1)
+    int nevram;
+    if (ram == 0)
     {
-        printf("Le pere n'est pas en l'etat elu\n");
-        exit(EXIT_FAILURE);
-    }*/
-    if (nouveauNoeud != NULL)
-    {
-        printf("Initialiser la taille de ram de cette processus : ");
-        scanf("%d", &nouveauNoeud->RAM);
-        ram = ram - nouveauNoeud->RAM;
-        if (ram < 0)
-        {
-            printf("n'est pas un espace memoire\n");
-            exit(EXIT_FAILURE);
-        }
-        nouveauNoeud->PID = compteur;
-        compteur++;
-        nouveauNoeud->Etat = 0;
-        printf("Entrez le nom de cette processus : ");
-        getchar();
-        gets(nouveauNoeud->Nom);
-        nouveauNoeud->Fils = NULL;
-        nouveauNoeud->Frere = NULL;
-        Pret = InsererFin(&Pret, nouveauNoeud->PID);
-        printf("Svp entez le PID de la pere de cette processus : ");
-        scanf("%d", &p);
-        InsererNoeud(nouveauNoeud, p);
+        printf("Espace dans la Ram insufisant ajoute imposible !!\n");
+        return;
     }
+    printf("Saisir la taille de ram de cette processus : \n");
+    scanf("%d", &nevram);
+    while (ram - nevram < 0)
+    {
+        printf("Espace dans la Ram insufisant refaire la saisie : ");
+        scanf("%d", &nevram);
+    }
+    TListeProcessus temp;
+    do
+    {
+        temp = rechercheliste(Elu);
+        if (temp == NULL)
+        {
+            printf("Le pere de cette processus n'est pas dans l'etat elu \n");
+            printf("Les PID dans la liste elu est : "); 
+            afficherListe(Elu);
+        }
+    } while (temp == NULL);
+    ram = ram - nevram;
+    TarbreProcessus nouveauNoeud = malloc(sizeof(elementArbre));
+    nouveauNoeud->RAM = nevram;
+    InsererNoeud(nouveauNoeud, temp->PID);
+    nouveauNoeud->PID = compteur;
+    compteur++;
+    nouveauNoeud->Etat = 0;
+    printf("Entrez le nom de cette processus : ");
+    getchar();
+    gets(nouveauNoeud->Nom);
+    nouveauNoeud->Fils = NULL;
+    nouveauNoeud->Frere = NULL;
+    Pret = InsererFin(&Pret, nouveauNoeud->PID);
 }
-
 void InsererNoeud(TarbreProcessus l, int p)
 {
     TarbreProcessus temp;
@@ -154,23 +160,19 @@ TListeProcessus InsererFin(TListeProcessus *l, int P)
     return *l;
 }
 
-void Htop(TarbreProcessus root)
+void Htop(TarbreProcessus r)
 {
-    printf("Les information de root :\n"); 
-    printf("PID = %d \n", root->PID);
-    printf("L'etat de cette processus : %d\n", root->Etat);
-    printf("La ram de cette processus : %d\n", root->RAM);
-    if (root->Fils != NULL)
+    if (r != NULL)
     {
-        TarbreProcessus pere = recherchpere(root->Fils);
+        TarbreProcessus pere = recherchpere(r);
         printf("Le nom de cette processus est : ");
-        puts(root->Nom);
-        printf("PID = %d \n", root->PID);
-        printf("L'etat de cette processus : %d\n", root->Etat);
-        printf("La ram de cette processus : %d\n", root->RAM);
+        puts(r->Nom);
+        printf("PID = %d \n", r->PID);
+        printf("L'etat de cette processus : %d\n", r->Etat);
+        printf("La ram de cette processus : %d\n", r->RAM);
         printf("Le PID de pere est :%d\n", pere->PID);
-        Htop(root->Frere);
-        Htop(root->Fils);
+        Htop(r->Fils);
+        Htop(r->Frere);
     }
 }
 
@@ -227,4 +229,24 @@ TarbreProcessus recherchpere(TarbreProcessus l)
     }
     printf("le pere n'est pas trouvee");
     return pere;
+}
+
+TListeProcessus rechercheliste(TListeProcessus l)
+{
+    TListeProcessus par = l;
+    int pid;
+    printf("Entrer le PID\n");
+    scanf("%d", &pid);
+    while (par != NULL)
+    {
+        if (par->PID == pid)
+        {
+            printf("PID trouvee\n\n");
+            return par;
+        }
+
+        par = par->Suivant;
+    }
+    printf("PID n'existe pas\n");
+    return NULL;
 }

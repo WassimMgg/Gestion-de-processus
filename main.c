@@ -7,7 +7,7 @@
 
 int main()
 {
-    int x, i = 1, tr, p;
+    int x, tr, p;
     TarbreProcessus temp; 
     printf("Initialiser la taille de ram : ");
     scanf("%d",&ram);
@@ -15,7 +15,7 @@ int main()
     LancerRoot();
     while(1)
     {
-    printf("-----------------------------------\n");
+    printf("\n-----------------------------------\n");
     printf("1- Creez un processus\n"); 
     printf("2-Lancez un processus\n"); 
     printf("3-Tuez un processus\n");
@@ -28,19 +28,21 @@ int main()
     printf("0- Quittez l'exuction\n"); 
     printf("Entrez votre choix : "); 
     scanf("%d",&x);
-    printf("----------------------------------\n");
+    printf("\n----------------------------------\n");
         switch (x)
         {
         case 0:
             return 0; 
             break;
         case 1: 
-            printf("La processus numero %d\n",i); 
-            i++; 
+            printf("La processus numero %d\n",compteur);  
             Creer(); 
             break;
         case 5: 
-            Htop(root); 
+            printf("PID = %d \n", root->PID);
+            printf("L'etat de cette processus : %d\n", root->Etat);
+            printf("La ram de cette processus : %d\n", root->RAM);
+            Htop(root->Fils); 
             break;
         case 6: 
             printf("Les elements dans l'etat Pret : \n"); 
