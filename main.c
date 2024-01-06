@@ -7,62 +7,75 @@
 
 int main()
 {
-    int x, tr, p;
-    TarbreProcessus temp; 
-    printf("Initialiser la taille de ram : ");
-    scanf("%d",&ram);
+    int tr, p;
+    char y[20];
+    TarbreProcessus temp;
+    printf("Initialiser la taille de ram de cette programme : ");
+    scanf("%d", &ram);
     creeroot();
     LancerRoot();
-    while(1)
+    while (1)
     {
-    printf("\n-----------------------------------\n");
-    printf("1- Creez un processus\n"); 
-    printf("2-Lancez un processus\n"); 
-    printf("3-Tuez un processus\n");
-    printf("4-Terminez un processus\n");
-    printf("5-Affichez un processus\n");
-    printf("6-Affichez la liste Pret \n");
-    printf("7-Affichez la liste Elu \n");
-    printf("8-Affichez la liste Bloquer \n");
-    printf("9-Rechercher un processus\n"); 
-    printf("0- Quittez l'exuction\n"); 
-    printf("Entrez votre choix : "); 
-    scanf("%d",&x);
-    printf("\n----------------------------------\n");
-        switch (x)
+        printf("\n-----------------------------------\n");
+        printf("               Creer\n");
+        printf("               Lancer\n");
+        printf("               Tuer\n");
+        printf("               Terminer\n");
+        printf("               Htop\n");
+        printf("               Bloquer \n");
+        printf("               Debloquer \n");
+        printf("               Quittez \n");
+        printf("\n----------------------------------\n");
+        printf("Entrez votre choix : ");
+        fflush(stdin);
+        //? Use fgets to avoid buffer overflow
+        fgets(y, sizeof(y), stdin);
+        //? Remove newline character from the end
+        y[strcspn(y, "\n")] = '\0';
+        if (strcmp(y, "Quitter") == 0)
+            return 0;
+        else if (strcmp(y, "Creer") == 0)
         {
-        case 0:
-            return 0; 
-            break;
-        case 1: 
-            printf("La processus numero %d\n",compteur);  
-            Creer(); 
-            break;
-        case 5: 
-            printf("PID = %d \n", root->PID);
-            printf("L'etat de cette processus : %d\n", root->Etat);
-            printf("La ram de cette processus : %d\n", root->RAM);
-            Htop(root->Fils); 
-            break;
-        case 6: 
-            printf("Les elements dans l'etat Pret : \n"); 
-            afficherListe(Pret); 
-            break;
-        case 7: 
-            printf("Les elements dans l'etat Elu: \n"); 
-            afficherListe(Elu);
-            break; 
-        case 8: 
-            printf("Les elements dans l'etat Bloquer : \n"); 
-            afficherListe(Bloquer);  
-            break;
-        case 9: 
-            temp = recherchpere(root->Fils); 
-            printf("PID = %d\n",temp->PID);
-            break;
-        default:
-        printf("numero incorrect refaire la saisir SVP!!\n");
-            break;
+            printf("La processus numero %d\n", compteur);
+            Creer();
         }
+
+        else if (strcmp(y, "Lancer") == 0)
+        {
+            printf("Enterez le nom de processus : ");
+            Lancer();
+        }
+
+        else if (strcmp(y, "Bloquer") == 0)
+        {
+            printf("Enterez le nom de processus : ");
+            Bloquer();
+        }
+
+        else if (strcmp(y, "Debloquer") == 0)
+        {
+            printf("Enterez le nom de processus : ");
+            Debloquer();
+        }
+        else if (strcmp(y, "Tuer") == 0)
+        {
+            printf("Enterez le nom de processus : ");
+            Tuer();
+        }
+        else if (strcmp(y, "Terminer") == 0)
+        {
+            printf("Enterez le nom de processus : ");
+            Terminer();
+        }
+        else if (strcmp(y, "Htop") == 0)
+        {
+            printf("PID de root = %d \n", root->PID);
+            printf("L'etat de processus root : %d\n", root->Etat);
+            printf("La ram de processus root : %d\n", root->RAM);
+            printf("----------------------------------\n");
+            Htop(root->Fils);
+        }
+        else
+            printf("Le nom de l'operation incorrect refaire la saisir SVP!!\n");
     }
 }

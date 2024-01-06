@@ -6,6 +6,3 @@ main.o: main.c
 
 Gestion_Des_Processus.o: Gestion_Des_Processus.c Gestion_Des_Processus.h
 	gcc -c Gestion_Des_Processus.c
-
-clean: 
-	rm *.o 
