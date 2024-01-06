@@ -34,6 +34,7 @@ void InsererNoeud(TarbreProcessus l, int p);
 TListeProcessus SuppDebut(TListeProcessus *l); 
 TarbreProcessus recherchepere(TarbreProcessus l);
 TListeProcessus rechercheliste(TListeProcessus l);
+TarbreProcessus recherche(TarbreProcessus l, int p); 
 void Lancer();
 void Tuer();
 void Terminer();

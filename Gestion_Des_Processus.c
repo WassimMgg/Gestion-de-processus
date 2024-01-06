@@ -29,7 +29,7 @@ void LancerRoot()
 {
     root->Etat = 1;
     Elu = InsererFin(&Elu, root->PID);
-    Pret = SuppDebut(&Pret);
+    //Pret = SuppDebut(&Pret);
 }
 
 void Creer()
@@ -55,7 +55,8 @@ void Creer()
         scanf("%d", &nevram);
     }
     TListeProcessus temp;
-    do
+    temp = rechercheliste(Pret);
+    /*do
     {
         temp = rechercheliste(Elu);
         if (temp == NULL)
@@ -64,7 +65,7 @@ void Creer()
             printf("Les PID dans la liste elu est : ");
             afficherListe(Elu);
         }
-    } while (temp == NULL);
+    } while (temp == NULL);*/
     ram = ram - nevram;
     nouveauNoeud->RAM = nevram;
     InsererNoeud(nouveauNoeud, temp->PID);
@@ -117,7 +118,7 @@ void InsererNoeud(TarbreProcessus l, int p)
         }
         else
         {
-            temp = recherchepere(root->Fils);
+            temp = recherche(noued,p);
             if (temp == NULL)
                 printf("Cette PID n'existe pas \n");
             else
@@ -239,7 +240,7 @@ TarbreProcessus recherchepere(TarbreProcessus l)
             pere = pere->Fils;
         }
     }
-    return pere;
+    return NULL;
 }
 
 TListeProcessus rechercheliste(TListeProcessus l)
@@ -260,4 +261,26 @@ TListeProcessus rechercheliste(TListeProcessus l)
     }
     printf("\nPID n'existe pas\n");
     return NULL;
+}
+
+TarbreProcessus recherche(TarbreProcessus l, int p)
+{
+    TarbreProcessus r = root->Fils, temp;
+    while (r != NULL)
+    {
+        if (r->PID == p)
+            return r;
+        else
+        {
+            temp = r;
+            while (temp->Frere != NULL)
+            {
+                if (temp->Frere->PID == p)
+                    return temp->Frere;
+                temp = temp->Frere;
+            }
+            r = r->Fils;
+        }
+    }
+    return r;
 }
