@@ -42,13 +42,11 @@ int main()
 
         else if (strcmp(y, "Lancer") == 0)
         {
-            printf("Enterez le nom de processus : ");
             Lancer();
         }
 
         else if (strcmp(y, "Bloquer") == 0)
         {
-            printf("Enterez le nom de processus : ");
             Bloquer();
         }
 
