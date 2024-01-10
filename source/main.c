@@ -52,26 +52,48 @@ int main()
 
         else if (strcmp(y, "Debloquer") == 0)
         {
-            printf("Enterez le nom de processus : ");
             Debloquer();
         }
         else if (strcmp(y, "Tuer") == 0)
         {
-            printf("Enterez le nom de processus : ");
-            Tuer();
+            char Nom[12];
+            printf("Entrez le nom de cette processus : ");
+            do
+            {
+                fflush(stdin);
+                fgets(Nom, sizeof(Nom), stdin);
+                Nom[strcspn(Nom, "\n")] = '\0';
+                temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+                if (temp == NULL)
+                    printf("\nLe nom n'existe pas refaire la saisie : ");
+            } while (temp == NULL);
+            Tuer(temp);
+            printf("L'operation termine avec seccus\n");
         }
         else if (strcmp(y, "Terminer") == 0)
         {
-            printf("Enterez le nom de processus : ");
-            Terminer();
+            char Nom[12];
+            printf("Entrez le nom de cette processus : ");
+            do
+            {
+                fflush(stdin);
+                fgets(Nom, sizeof(Nom), stdin);
+                Nom[strcspn(Nom, "\n")] = '\0';
+                temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+                if (temp == NULL)
+                    printf("\nLe nom n'existe pas refaire la saisie : ");
+            } while (temp == NULL);
+            Terminer(temp);
+            printf("L'operation termine avec seccus\n");
         }
         else if (strcmp(y, "Htop") == 0)
         {
             printf("PID de root = %d \n", root->PID);
             printf("L'etat de processus root : %d\n", root->Etat);
             printf("La ram de processus root : %d\n", root->RAM);
+            printf("Le numero de microprocesseur est : 1\n");
             printf("----------------------------------\n");
-            Htop(root->Fils);
+            Htop();
         }
         else
             printf("Le nom de l'operation incorrect refaire la saisir SVP!!\n");
