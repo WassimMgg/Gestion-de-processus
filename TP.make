@@ -17,7 +17,7 @@ endif
 
 # Configurations
 # #############################################
-CC = gcc 
+CC = gcc
 RESCOMP = windres
 INCLUDES +=
 FORCE_INCLUDE +=
