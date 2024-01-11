@@ -117,7 +117,6 @@ void Lancer()
 void Tuer(TarbreProcessus l) {
     TarbreProcessus temp = Search(root, l->PID);
     temp = Search(root, temp->PIDp);
-
     if (temp->Fils->PID == l->PID) {
         temp->Fils = l->Frere;
     } else {
@@ -130,17 +129,16 @@ void Tuer(TarbreProcessus l) {
             par = par->Frere;
         }
     }
-
     SuppArbre(l->Fils);
     ram += l->RAM;
     ListeAffichage = Supp(&ListeAffichage, l->PID);
-
     switch (l->Etat) {
         case 0:
             Pret = Supp(&Pret, l->PID);
             break;
         case 1:
             Elu = Supp(&Elu, l->PID);
+            compteurelu--; 
             break;
         case 2:
             ListeBloquer = Supp(&ListeBloquer, l->PID);
@@ -179,7 +177,7 @@ void Bloquer()
     prec = rechercheliste(Elu, temp->PID); // rechercher dans la liste ELU
     if (prec == NULL)                      // Cette PID n'existe pas dans la liste ELu
     {
-        printf("Le pere de cette processus n'est pas dans l'etat elu \n");
+        printf("Cette processus n'est pas dans l'etat elu \n");
         printf("Les PID dans la liste elu est : ");
         afficherListe(Elu);
         return;
@@ -198,6 +196,11 @@ void Bloquer()
 
 void Debloquer()
 {
+    if(ListeBloquer == NULL)
+    {
+        printf("La liste est vide\n"); 
+        return;
+    }
     char Nom[12];
     TarbreProcessus temp;
     TListeProcessus prec;
@@ -214,7 +217,7 @@ void Debloquer()
     prec = rechercheliste(ListeBloquer, temp->PID); // rechercher dans la liste ELU
     if (prec == NULL)                               // Cette PID n'existe pas dans la liste ELu
     {
-        printf("Le pere de cette processus n'est pas dans l'etat Bloquer \n");
+        printf("Cette processus n'est pas dans l'etat Bloquer \n");
         printf("Les PID dans la liste Bloquer est : ");
         afficherListe(ListeBloquer);
         return;
@@ -223,7 +226,7 @@ void Debloquer()
     {
         if (compteurelu >= 4) // Verifier le nombre de microprocesseur
         {
-            printf("\nla liste Elu est complet, impossible de Lancer cette processus \n");
+            printf("\nla liste Elu est complet, impossible de debloquer cette processus \n");
             return;
         }
         else
@@ -493,6 +496,7 @@ void SuppArbre(TarbreProcessus r)
             break;
         case 1:
             Elu = Supp(&Elu, r->PID);
+            compteurelu--; 
             break;
         case 2:
             ListeBloquer = Supp(&ListeBloquer, r->PID);
