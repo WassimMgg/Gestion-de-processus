@@ -44,7 +44,7 @@ void Creer()
         fflush(stdin);
         fgets(nouveauNoeud->Nom, sizeof(nouveauNoeud->Nom), stdin);
         nouveauNoeud->Nom[strcspn(nouveauNoeud->Nom, "\n")] = '\0';
-        y = rechercheName(nouveauNoeud->Nom); // Verifier si le nom existe ou non
+        y = SearchName(root, nouveauNoeud->Nom); // Verifier si le nom existe ou non
         if (y != NULL)
             printf("Le nom deja existe refaire la saisie : ");
     } while (y != NULL);
@@ -61,12 +61,11 @@ void Creer()
         scanf("%d", &nevram);
     }
     TListeProcessus temp;
-    int PID;
     do
     {
         printf("\nEntrer le PID de pere SVP : \n");
-        scanf("%d", &PID);
-        temp = rechercheliste(Elu, PID); // Verifier le PID de pere est ce que dans L'etat elu ou non
+        scanf("%d", &nouveauNoeud->PIDp);
+        temp = rechercheliste(Elu,nouveauNoeud->PIDp); // Verifier le PID de pere est ce que dans L'etat elu ou non
         if (temp == NULL)                // le PID De Pere n'est pas dans l'état Elu
         {
             printf("Le pere de cette processus n'est pas dans l'etat elu \n");
@@ -88,9 +87,10 @@ void Creer()
     nouveauNoeud->Etat = 0;
     nouveauNoeud->Fils = NULL;
     nouveauNoeud->Frere = NULL;
-    InsererNoeud(nouveauNoeud, PID);                              // Inserer le noeud dans l'arbre
+    InsererNoeud(nouveauNoeud, nouveauNoeud->PIDp);                              // Inserer le noeud dans l'arbre
     Pret = Inserer(&Pret, nouveauNoeud->PID, nouveauNoeud->Prio); // Inserer le processus dans l'état Pret
     ListeAffichage = InsererFin(&ListeAffichage, nouveauNoeud->PID, nouveauNoeud->Prio);
+
 }
 
 void Lancer()
@@ -105,34 +105,48 @@ void Lancer()
         printf("\nLa liste Pret est vide ");
         return;
     }
-    noued = recherche(Pret->PID);                  // rechercher dans l'arbre pour modifier l'etat de processus
+    noued = Search(root, Pret->PID);               // rechercher dans l'arbre pour modifier l'etat de processus
     noued->Etat = 1;                               // Modifier l'état de processus
     Elu = InsererFin(&Elu, Pret->PID, Pret->Prio); // Inserer le processus dans la liste Elu
-    compteurelu++;                                 // Incrementer le nombre de microprocesseur
-    SuppDebut(&Pret);  
-    printf("Le processus avec le PID %d a ete lancee\n",Elu->PID);                            // Supperimer cette processus de liste pret
+    compteurelu++;
+    printf("Le processus avec le PID %d a ete lancee\n", Pret->PID); // Incrementer le nombre de microprocesseur
+    SuppDebut(&Pret);
+    // Supperimer cette processus de liste pret
 }
 
-void Tuer(TarbreProcessus l)
-{
-    TarbreProcessus temp = l;
-    temp = recherchepere(l->PID);
-    temp->Fils = l->Frere;
+void Tuer(TarbreProcessus l) {
+    TarbreProcessus temp = Search(root, l->PID);
+    temp = Search(root, temp->PIDp);
+
+    if (temp->Fils->PID == l->PID) {
+        temp->Fils = l->Frere;
+    } else {
+        TarbreProcessus par = temp->Fils;
+        while (par != NULL) {
+            if (par->Frere && par->Frere->PID == l->PID) {
+                par->Frere = par->Frere->Frere;
+                break;
+            }
+            par = par->Frere;
+        }
+    }
+
     SuppArbre(l->Fils);
     ram += l->RAM;
     ListeAffichage = Supp(&ListeAffichage, l->PID);
-    switch (l->Etat)
-    {
-    case 0:
-        Pret = Supp(&Pret, l->PID);
-        break;
-    case 1:
-        Elu = Supp(&Elu, l->PID);
-        break;
-    case 2:
-        ListeBloquer = Supp(&ListeBloquer, l->PID);
-        break;
+
+    switch (l->Etat) {
+        case 0:
+            Pret = Supp(&Pret, l->PID);
+            break;
+        case 1:
+            Elu = Supp(&Elu, l->PID);
+            break;
+        case 2:
+            ListeBloquer = Supp(&ListeBloquer, l->PID);
+            break;
     }
+
     free(l);
 }
 
@@ -144,6 +158,7 @@ void Terminer(TarbreProcessus l)
         return;
     }
     Tuer(l);
+    printf("L'operation termine avec seccus\n");
 }
 
 void Bloquer()
@@ -157,7 +172,7 @@ void Bloquer()
         fflush(stdin);
         fgets(Nom, sizeof(Nom), stdin);
         Nom[strcspn(Nom, "\n")] = '\0';
-        temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+        temp = SearchName(root, Nom); // Rechercher par nom dans l'arbre de processus
         if (temp == NULL)
             printf("\nLe nom n'existe pas refaire la saisie : ");
     } while (temp == NULL);
@@ -192,7 +207,7 @@ void Debloquer()
         fflush(stdin);
         fgets(Nom, sizeof(Nom), stdin);
         Nom[strcspn(Nom, "\n")] = '\0';
-        temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+        temp = SearchName(root, Nom); // Rechercher par nom dans l'arbre de processus
         if (temp == NULL)
             printf("\nLe nom n'existe pas refaire la saisie : ");
     } while (temp == NULL);
@@ -227,18 +242,11 @@ void InsererNoeud(TarbreProcessus l, int PID)
 {
     TarbreProcessus parent_node = NULL;
     TarbreProcessus current_node = NULL;
-    if (PID == 0)
+    parent_node = Search(root, PID); // rechercher le PID de pere et retourner l'adress de cette PID si il existe
+    if (parent_node == NULL)         // Le Pid n'existe pas
     {
-        parent_node = root; // si le pere est la racine
-    }
-    else
-    {
-        parent_node = recherche(PID); // rechercher le PID de pere et retourner l'adress de cette PID si il existe
-        if (parent_node == NULL)      // Le Pid n'existe pas
-        {
-            printf("Cette PID n'existe pas \n");
-            return; // Exit if parent not found
-        }
+        printf("Cette PID n'existe pas \n");
+        return; // Exit if parent not found
     }
     if (parent_node->Fils == NULL) // si le fils est Null
     {
@@ -324,15 +332,10 @@ void Htop()
     TListeProcessus temp = ListeAffichage;
     while (temp != NULL)
     {
-        TarbreProcessus node = recherche(temp->PID);
-        TarbreProcessus Parent = recherchepere(node->PID);
+        TarbreProcessus node = Search(root, temp->PID);
         printf("-----------------------------------\n");
         printf("Le nom de cette processus est : ");
-        for (int i = 0; node->Nom[i] != '\0'; i++)
-        {
-            putchar(node->Nom[i]);
-        }
-        printf("\n");
+        puts(node->Nom); 
         printf("PID = %d \n", node->PID);
         printf("L'etat de cette processus : %d\n", node->Etat);
         if (node->Etat == 1)
@@ -342,7 +345,7 @@ void Htop()
             printf("Le numero de microprocesseur de cette processus est : %d\n", indice);
         }
         printf("La ram de cette processus : %d\n", node->RAM);
-        printf("Le PID de pere est :%d\n", Parent->PID);
+        printf("Le PID de pere est :%d\n", node->PIDp);
         printf("-----------------------------------\n");
         temp = temp->Suivant;
     }
@@ -411,27 +414,6 @@ TListeProcessus Supp(TListeProcessus *l, int PID)
     return *l;
 }
 
-TarbreProcessus recherchepere(int PID)
-{
-    TarbreProcessus current_node = root;
-
-    while (current_node != NULL)
-    {
-        TarbreProcessus current_child = current_node->Fils;
-        while (current_child != NULL)
-        {
-            if (current_child->PID == PID)
-            {
-                return current_node;
-            }
-            current_child = current_child->Frere;
-        }
-        // move to The sibling subtree
-        current_node = current_node->Fils;
-    }
-    return NULL;
-}
-
 TListeProcessus rechercheliste(TListeProcessus l, int PID)
 {
     TListeProcessus par = l;
@@ -448,46 +430,40 @@ TListeProcessus rechercheliste(TListeProcessus l, int PID)
     return NULL;
 }
 
-TarbreProcessus recherche(int PID)
+TarbreProcessus Search(TarbreProcessus r, int PID)
 {
-    TarbreProcessus r = root->Fils, temp;
-    while (r != NULL)
+    if (r == NULL)
+        return NULL;
+
+    if (r->PID == PID)
+        return r;
+
+    TarbreProcessus I = r->Fils;
+    while (I)
     {
-        if (r->PID == PID)
-            return r;
-        else
-        {
-            temp = r;
-            while (temp->Frere != NULL)
-            {
-                if (temp->Frere->PID == PID)
-                    return temp->Frere;
-                temp = temp->Frere;
-            }
-            r = r->Fils;
-        }
+        TarbreProcessus result = Search(I, PID);
+        if (result != NULL)
+            return result;
+        I = I->Frere;
     }
-    return r;
+    return NULL;
 }
 
-TarbreProcessus rechercheName(char Nom[12])
+TarbreProcessus SearchName(TarbreProcessus r, char Nom[12])
 {
-    TarbreProcessus r = root->Fils, temp;
-    while (r != NULL)
+    if (r == NULL)
+        return NULL;
+
+    if (strcmp(r->Nom, Nom) == 0)
+        return r;
+
+    TarbreProcessus I = r->Fils;
+    while (I)
     {
-        if (strcmp(r->Nom, Nom) == 0)
-            return r;
-        else
-        {
-            temp = r;
-            while (temp->Frere != NULL)
-            {
-                if (strcmp(temp->Frere->Nom, Nom) == 0)
-                    return temp;
-                temp = temp->Frere;
-            }
-            r = r->Fils;
-        }
+        TarbreProcessus result = SearchName(I, Nom);
+        if (result != NULL)
+            return result;
+        I = I->Frere;
     }
     return NULL;
 }

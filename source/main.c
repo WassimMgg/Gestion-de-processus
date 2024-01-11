@@ -63,7 +63,7 @@ int main()
                 fflush(stdin);
                 fgets(Nom, sizeof(Nom), stdin);
                 Nom[strcspn(Nom, "\n")] = '\0';
-                temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+                temp = SearchName(root,Nom); // Rechercher par nom dans l'arbre de processus
                 if (temp == NULL)
                     printf("\nLe nom n'existe pas refaire la saisie : ");
             } while (temp == NULL);
@@ -79,12 +79,11 @@ int main()
                 fflush(stdin);
                 fgets(Nom, sizeof(Nom), stdin);
                 Nom[strcspn(Nom, "\n")] = '\0';
-                temp = rechercheName(Nom); // Rechercher par nom dans l'arbre de processus
+                temp = SearchName(root,Nom); // Rechercher par nom dans l'arbre de processus
                 if (temp == NULL)
                     printf("\nLe nom n'existe pas refaire la saisie : ");
             } while (temp == NULL);
             Terminer(temp);
-            printf("L'operation termine avec seccus\n");
         }
         else if (strcmp(y, "Htop") == 0)
         {

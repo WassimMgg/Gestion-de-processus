@@ -5,8 +5,9 @@
 typedef struct elementArbre *TarbreProcessus;
 typedef struct elementArbre{
     int PID;
+    int PIDp; 
     int Prio; 
-    char Nom[12] ;
+    char Nom[12];
     int RAM; 
     int Etat; 
     TarbreProcessus Fils; 
@@ -16,7 +17,7 @@ typedef struct elementArbre{
 typedef struct elementProcessus *TListeProcessus; 
 typedef struct elementProcessus
 {
-    int PID ;
+    int PID;
     int Prio;  
     TListeProcessus Suivant; 
 }elementProcessus;
@@ -28,6 +29,7 @@ TListeProcessus Elu;
 TListeProcessus Pret;
 TListeProcessus ListeBloquer;
 TListeProcessus ListeAffichage; 
+TListeProcessus ListePIDpere; 
 int ram;
 int compteur;
 int compteurelu; 
@@ -42,16 +44,17 @@ void afficherListe(TListeProcessus l);
 void InsererNoeud(TarbreProcessus l, int p); 
 TListeProcessus SuppDebut(TListeProcessus *l);
 TListeProcessus Supp(TListeProcessus *l ,int PID); 
-TarbreProcessus recherchepere(int PID);
+TarbreProcessus SearchName(TarbreProcessus r,char Nom[12]);
+TarbreProcessus Searchprec(TarbreProcessus r,int PID);
 TListeProcessus rechercheliste(TListeProcessus l,int PID);
 int rechercheindiceliste(TListeProcessus l, int PID);
-TListeProcessus InsererFin(TListeProcessus *l, int P, int prio);
-TarbreProcessus recherche(int p); 
+TListeProcessus InsererFin(TListeProcessus *l, int P,int Prio); 
 void Lancer();
 void Tuer(TarbreProcessus l);
 void Terminer(TarbreProcessus l);
 void Bloquer(); 
 void Debloquer(); 
-TarbreProcessus rechercheName(char  Nom[12]);
-void SuppArbre(TarbreProcessus r);
-#endif // heka bah tt3erref mara wahda
+void SuppArbre(TarbreProcessus r); 
+TarbreProcessus Search(TarbreProcessus r, int PID); 
+TarbreProcessus Searchfather(TarbreProcessus r,int PID);
+#endif 
